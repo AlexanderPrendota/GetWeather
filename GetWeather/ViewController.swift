@@ -13,7 +13,8 @@ import Foundation
 class ViewController: UIViewController {
     
     @IBOutlet weak var weatherIcon: UIImageView!
-    let url = "http://api.openweathermap.org/data/2.5/forecast/city?id=524901&APPID=a7a551a913b3979fe01b3e56c05d2a5f"
+    let url = "http://api.openweathermap.org/data/2.5/forecast/city?q=Moscow&APPID=a7a551a913b3979fe01b3e56c05d2a5f"
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()

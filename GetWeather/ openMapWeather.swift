@@ -8,6 +8,9 @@
 
 import Foundation
 import UIKit
+import Alamofire
+import MBProgressHUD
+import SwiftyJSON
 
 
 class openMapWeather {
@@ -17,6 +20,7 @@ class openMapWeather {
     var wind : Int
     var currentTime : String?
     var icon : UIImage?
+    
     
     init(weatherJSON : NSDictionary) {
         
