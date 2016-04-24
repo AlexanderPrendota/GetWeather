@@ -12,26 +12,38 @@ import Alamofire
 import MBProgressHUD
 import SwiftyJSON
 
+protocol OpenWeatherMapDelegate {
+    
+        func updateWeatherInfo()
+    
+}
 
 class openMapWeather {
-    var name : String
-    var description : String
-    var temp : Int
-    var wind : Int
+    var weatherUrl = "http://api.openweathermap.org/data/2.5/forecast/city"
+    var apiKey = "a7a551a913b3979fe01b3e56c05d2a5f"
+    var nameCity : String?
     var currentTime : String?
     var icon : UIImage?
-    
-    
-    init(weatherJSON : NSDictionary) {
-        
 
-        name = weatherJSON["city"]!["name"] as! String
-        description = weatherJSON["list"]![0]!["weather"]!![0]["description"] as! String
-        temp = weatherJSON["list"]![0]!["main"]!!["temp"] as! Int - 273
-        wind = weatherJSON["list"]![0]!["wind"]!!["speed"] as! Int
-        currentTime = timeFromUnix(weatherJSON["list"]![0]!["dt"] as! Int)
-        icon = weatherIcon(weatherJSON["list"]![0]!["weather"]!![0]["icon"] as! String)
-        
+    
+    var delegate : OpenWeatherMapDelegate!
+    
+    func getWeatherForCity(city : String) {
+        let params = ["q" : city, "APPID" : apiKey]
+        request(.GET, weatherUrl, parameters: params).responseJSON {response in
+            if(response.result.error != nil) {
+                NSLog("Error \(response.result.error)")
+            } else {
+                let weatherJSON = JSON(response.result.value!)
+                if let name = weatherJSON["city"]["name"].string {
+                    self.nameCity = name
+                }
+                // в общий поток
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.delegate.updateWeatherInfo()
+                })
+             }
+        }
     }
 }
 
@@ -76,11 +88,8 @@ func weatherIcon(stringIcon: String) -> UIImage {
     
     let imageIcon = UIImage(named: imageName)
     return imageIcon!
-
     
 }
-
-
 
 
 
