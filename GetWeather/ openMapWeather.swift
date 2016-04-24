@@ -14,14 +14,16 @@ import SwiftyJSON
 
 protocol OpenWeatherMapDelegate {
     
-        func updateWeatherInfo()
+    func updateWeatherInfo(weatherJson : JSON)
     
 }
 
 class openMapWeather {
     var weatherUrl = "http://api.openweathermap.org/data/2.5/forecast/city"
     var apiKey = "a7a551a913b3979fe01b3e56c05d2a5f"
+    
     var nameCity : String?
+    var temperature : Double?
     var currentTime : String?
     var icon : UIImage?
 
@@ -30,22 +32,25 @@ class openMapWeather {
     
     func getWeatherForCity(city : String) {
         let params = ["q" : city, "APPID" : apiKey]
-        request(.GET, weatherUrl, parameters: params).responseJSON {response in
-            if(response.result.error != nil) {
-                NSLog("Error \(response.result.error)")
-            } else {
-                let weatherJSON = JSON(response.result.value!)
-                if let name = weatherJSON["city"]["name"].string {
-                    self.nameCity = name
-                }
-                // в общий поток
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.delegate.updateWeatherInfo()
-                })
-             }
-        }
+        setAlamofire(params)
+}
+
+func setAlamofire(params: [String : String]) {
+    
+    request(.GET, weatherUrl, parameters: params).responseJSON {response in
+        if(response.result.error != nil) {
+            NSLog("Error \(response.result.error)")
+        } else {
+            let weatherJSON = JSON(response.result.value!)
+            
+            // в общий поток
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.delegate.updateWeatherInfo(weatherJSON)
+            })
+         }
     }
 }
+//MARK: updateWeatherInfo
 
 func timeFromUnix(unixTime : Int) -> String {
     
@@ -91,15 +96,19 @@ func weatherIcon(stringIcon: String) -> UIImage {
     
 }
 
+    func convertTemperature(country : String, temp : Double) -> Double {
+        if country == "US" || country == "USA" {
+            return round(((temp - 273.15)*1.8) + 32)
+        } else {
+            return round(temp - 273.15)
+        }
+    }
 
 
 
 
 
-
-
-
-
+}
 
 
 

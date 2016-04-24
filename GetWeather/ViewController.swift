@@ -8,11 +8,16 @@
 
 import UIKit
 import Foundation
+import UIKit
+import Alamofire
+import MBProgressHUD
+import SwiftyJSON
 
 
 class ViewController: UIViewController, OpenWeatherMapDelegate {
     
     var openWeather = openMapWeather()
+    
     @IBAction func cityTappedButton(sender: UIBarButtonItem) {
         displayCity()
     }
@@ -49,8 +54,24 @@ class ViewController: UIViewController, OpenWeatherMapDelegate {
     
     // MARK:  Delegate
     
-    func updateWeatherInfo() {
-        print(openWeather.nameCity!)
+    func updateWeatherInfo(weatherJson : JSON ) {
+        
+        if let tempResalt = weatherJson["list"][0]["main"]["temp"].double {
+            //Get country
+            let country = weatherJson["city"]["coord"]["country"].stringValue
+            // Convert temperature
+            let temperature = openWeather.convertTemperature(country, temp: tempResalt)
+            print(temperature)
+            //city
+            let cityName = weatherJson["city"]["name"].stringValue
+            print(cityName)
+            
+            
+        } else {
+            print("Please enter correct info")
+        }
+        
     }
+    
 }
 
