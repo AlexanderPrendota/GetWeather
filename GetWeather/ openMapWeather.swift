@@ -15,6 +15,7 @@ import SwiftyJSON
 protocol OpenWeatherMapDelegate {
     
     func updateWeatherInfo(weatherJson : JSON)
+    func failConnect()
     
 }
 
@@ -27,7 +28,6 @@ class openMapWeather {
     var currentTime : String?
     var icon : UIImage?
 
-    
     var delegate : OpenWeatherMapDelegate!
     
     func getWeatherForCity(city : String) {
@@ -39,7 +39,7 @@ func setAlamofire(params: [String : String]) {
     
     request(.GET, weatherUrl, parameters: params).responseJSON {response in
         if(response.result.error != nil) {
-            NSLog("Error \(response.result.error)")
+            self.delegate.failConnect()
         } else {
             let weatherJSON = JSON(response.result.value!)
             
@@ -62,7 +62,7 @@ func timeFromUnix(unixTime : Int) -> String {
     return dateFormatter.stringFromDate(weatherDate)
 }
 
-func weatherIcon(stringIcon: String) -> UIImage {
+func getWeatherIcon(stringIcon: String) -> UIImage {
     
     let imageName : String
     
@@ -96,13 +96,13 @@ func weatherIcon(stringIcon: String) -> UIImage {
     
 }
 
-    func convertTemperature(country : String, temp : Double) -> Double {
-        if country == "US" || country == "USA" {
-            return round(((temp - 273.15)*1.8) + 32)
-        } else {
-            return round(temp - 273.15)
-        }
+func convertTemperature(country : String, temp : Double) -> Double {
+    if country == "US" || country == "USA" {
+        return round(((temp - 273.15)*1.8) + 32)
+    } else {
+        return round(temp - 273.15)
     }
+}
 
 
 
