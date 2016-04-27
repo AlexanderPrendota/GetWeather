@@ -11,16 +11,18 @@ import UIKit
 import Alamofire
 import MBProgressHUD
 import SwiftyJSON
+import CoreLocation
 
 protocol OpenWeatherMapDelegate {
     
     func updateWeatherInfo(weatherJson : JSON)
     func failConnect()
+    func updateLocation(weatherJson : JSON)
     
 }
 
 class openMapWeather {
-    var weatherUrl = "http://api.openweathermap.org/data/2.5/forecast/city"
+    
     var apiKey = "a7a551a913b3979fe01b3e56c05d2a5f"
     
     var nameCity : String?
@@ -31,42 +33,60 @@ class openMapWeather {
     var delegate : OpenWeatherMapDelegate!
     
     func getWeatherForCity(city : String) {
+        let weatherUrl = "http://api.openweathermap.org/data/2.5/forecast/city"
         let params = ["q" : city, "APPID" : apiKey]
-        setAlamofire(params)
-}
-
-func setAlamofire(params: [String : String]) {
-    
-    request(.GET, weatherUrl, parameters: params).responseJSON {response in
-        if(response.result.error != nil) {
-            self.delegate.failConnect()
-        } else {
-            let weatherJSON = JSON(response.result.value!)
-            
-            // в общий поток
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                self.delegate.updateWeatherInfo(weatherJSON)
-            })
-         }
+        setAlamofire(params, apiURL: weatherUrl)
     }
-}
-//MARK: updateWeatherInfo
 
-func timeFromUnix(unixTime : Int) -> String {
+    func setAlamofire(params: [String : AnyObject]?, apiURL : String) {
     
-    let timeInSecond = NSTimeInterval(unixTime)
-    let weatherDate = NSDate(timeIntervalSince1970: timeInSecond)
-    let dateFormatter = NSDateFormatter()
-    dateFormatter.dateFormat = "HH:mm"
+        request(.GET, apiURL, parameters: params).responseJSON {response in
+            if(response.result.error != nil) {
+                self.delegate.failConnect()
+            } else {
+                let weatherJSON = JSON(response.result.value!)
+                let weatherJSONLoc = JSON(response.result.value!)
+            
+                // в общий поток
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.delegate.updateWeatherInfo(weatherJSON)
+                    self.delegate.updateLocation(weatherJSONLoc)
+                })
+            }
+        }
+    }
     
-    return dateFormatter.stringFromDate(weatherDate)
-}
+    
+    func weatherFor(geo : CLLocationCoordinate2D) {
+         //http://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&APPID=a7a551a913b3979fe01b3e56c05d2a5f
+         // let lat = Int(geo.latitude)
+         //let lon = Int(geo.longitude)
+        
+        let geoURL = "http://api.openweathermap.org/data/2.5/weather?"
+        let params = ["lat" : geo.latitude  , "lon" : geo.longitude, "APPID" : apiKey]
+        
+        setAlamofire(params as? [String : AnyObject], apiURL: geoURL)
+        
+        
+       // print("\(geoURL),\(geo.latitude),\(geo.longitude)")
+    }
+    
 
-func getWeatherIcon(stringIcon: String) -> UIImage {
+    func timeFromUnix(unixTime : Int) -> String {
     
-    let imageName : String
+        let timeInSecond = NSTimeInterval(unixTime)
+        let weatherDate = NSDate(timeIntervalSince1970: timeInSecond)
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
     
-    switch stringIcon {
+        return dateFormatter.stringFromDate(weatherDate)
+    }
+
+    func getWeatherIcon(stringIcon: String) -> UIImage {
+    
+        let imageName : String
+    
+        switch stringIcon {
         
         case "01d" : imageName = "01d"
         case "02d" : imageName = "02d"
@@ -88,25 +108,21 @@ func getWeatherIcon(stringIcon: String) -> UIImage {
         case "13n" : imageName = "13n"
         case "50n" : imageName = "50n"
         
-    default: imageName = "none"
-    }
+        default: imageName = "none"
+        }
     
-    let imageIcon = UIImage(named: imageName)
-    return imageIcon!
+        let imageIcon = UIImage(named: imageName)
+        return imageIcon!
     
-}
-
-func convertTemperature(country : String, temp : Double) -> Double {
-    if country == "US" || country == "USA" {
-        return round(((temp - 273.15)*1.8) + 32)
-    } else {
-        return round(temp - 273.15)
     }
-}
 
-
-
-
+    func convertTemperature(country : String, temp : Double) -> Double {
+        if country == "US" || country == "USA" {
+            return round(((temp - 273.15)*1.8) + 32)
+        } else {
+            return round(temp - 273.15)
+        }
+    }
 
 }
 

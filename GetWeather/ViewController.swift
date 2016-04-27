@@ -9,16 +9,20 @@
 import UIKit
 import Foundation
 import UIKit
-import Alamofire
 import MBProgressHUD
 import SwiftyJSON
+import CoreLocation
 
 
-class ViewController: UIViewController, OpenWeatherMapDelegate {
+class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
     
     var openWeather = openMapWeather()
     var hud = MBProgressHUD()
+    let locationManager : CLLocationManager = CLLocationManager()
 
+    
+    @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak var textLabel2: UILabel!
     
     @IBAction func cityTappedButton(sender: UIBarButtonItem) {
         displayCity()
@@ -27,7 +31,16 @@ class ViewController: UIViewController, OpenWeatherMapDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.openWeather.delegate = self
+        locationManager.delegate = self
+        
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+        
+        
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,6 +69,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate {
     }
     
     func activity() {
+        
         hud.labelText = "Loading..."
         hud.dimBackground = true
         self.view.addSubview(hud)
@@ -84,11 +98,67 @@ class ViewController: UIViewController, OpenWeatherMapDelegate {
             print(cityName)
             print(temperature)
             self.weatherIcon.image = weatherIcon
+            self.textLabel.text = cityName
+            self.textLabel2.text = String(temperature)
             
             
         } else {
             print("Please enter correct info")
         }
+        
+    }
+    
+    func updateLocation(weatherJson : JSON ) {
+        
+        hud.hide(true)
+        
+        if let tempResalt = weatherJson["main"]["temp"].double {
+            //Get country
+            let country = weatherJson["sys"]["country"].stringValue
+            //Get Convert temperature
+            let temperature = openWeather.convertTemperature(country, temp: tempResalt)
+            //Get city
+            let cityName = weatherJson["name"].stringValue
+            
+            
+            
+            //print data
+            print(cityName)
+            print(temperature)
+            self.textLabel.text = cityName
+            self.textLabel2.text = String(temperature)
+            
+            
+        } else {
+            print("Please enter correct info")
+        }
+        
+    }
+    
+    // MARK : CLLDelegate
+    
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+       // print(manager.location!)
+        self.activity()
+        let correntLoc = locations.last! as CLLocation
+        
+        if (correntLoc.horizontalAccuracy > 0) {
+            //stop - save bat energy
+            locationManager.stopUpdatingLocation()
+            
+            let coordinates = CLLocationCoordinate2DMake(correntLoc.coordinate.latitude, correntLoc.coordinate.longitude)
+            
+            self.openWeather.weatherFor(coordinates)
+           
+            print(coordinates)
+            
+        }
+        
+    }
+    
+    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+        print(error)
+        print("Cant get your location")
         
     }
     
