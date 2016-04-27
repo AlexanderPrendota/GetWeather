@@ -56,19 +56,15 @@ class openMapWeather {
         }
     }
     
-    
     func weatherFor(geo : CLLocationCoordinate2D) {
          //http://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&APPID=a7a551a913b3979fe01b3e56c05d2a5f
-         // let lat = Int(geo.latitude)
-         //let lon = Int(geo.longitude)
+
         
         let geoURL = "http://api.openweathermap.org/data/2.5/weather?"
         let params = ["lat" : geo.latitude  , "lon" : geo.longitude, "APPID" : apiKey]
         
         setAlamofire(params as? [String : AnyObject], apiURL: geoURL)
-        
-        
-       // print("\(geoURL),\(geo.latitude),\(geo.longitude)")
+
     }
     
 

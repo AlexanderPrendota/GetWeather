@@ -38,8 +38,6 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
-        
-        
 
     }
 
@@ -93,7 +91,6 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
             let weatherStringIcon = weatherJson["list"][0]["weather"][0]["icon"].stringValue
             let weatherIcon = openWeather.getWeatherIcon(weatherStringIcon)
         
-            
             //print data
             print(cityName)
             print(temperature)
@@ -119,12 +116,13 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
             let temperature = openWeather.convertTemperature(country, temp: tempResalt)
             //Get city
             let cityName = weatherJson["name"].stringValue
-            
-            
+            let weatherStringIcon = weatherJson["weather"][0]["icon"].stringValue
+            let weatherIcon = openWeather.getWeatherIcon(weatherStringIcon)
             
             //print data
             print(cityName)
             print(temperature)
+            self.weatherIcon.image = weatherIcon
             self.textLabel.text = cityName
             self.textLabel2.text = String(temperature)
             
