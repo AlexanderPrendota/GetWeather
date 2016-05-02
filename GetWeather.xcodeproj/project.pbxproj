@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		32D4934BA6B3DAA1C4CEFAC1 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55ABE8A8EF57A368ECE2FD35 /* Pods.framework */; };
+		752B6A7F1CD636BF005B8539 /* ViewControllerForecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752B6A7E1CD636BF005B8539 /* ViewControllerForecast.swift */; };
+		752B6A831CD741B4005B8539 /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 752B6A821CD741B4005B8539 /* bg.png */; };
+		752B6A871CD74322005B8539 /* bg1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 752B6A861CD74322005B8539 /* bg1.jpg */; };
 		755DA3F01CCBCF2D0099F89E /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 755DA3EF1CCBCF2D0099F89E /* Podfile */; };
 		756D48761CC2900E008C9925 /*  openMapWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756D48751CC2900E008C9925 /*  openMapWeather.swift */; };
 		75735AB11CCE73C4004C001E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75735AB01CCE73C4004C001E /* CoreLocation.framework */; };
@@ -23,6 +26,9 @@
 		1C5E76BB2C01701A974253F4 /* Pods_GetWeather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GetWeather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FD50C1D6E32CF15003538C5 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		55ABE8A8EF57A368ECE2FD35 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		752B6A7E1CD636BF005B8539 /* ViewControllerForecast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerForecast.swift; sourceTree = "<group>"; };
+		752B6A821CD741B4005B8539 /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
+		752B6A861CD74322005B8539 /* bg1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bg1.jpg; sourceTree = "<group>"; };
 		755DA3EF1CCBCF2D0099F89E /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		756D48751CC2900E008C9925 /*  openMapWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = " openMapWeather.swift"; sourceTree = "<group>"; };
 		75735AB01CCE73C4004C001E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -91,8 +97,11 @@
 		75A0B2171CB9551100CC8E97 /* GetWeather */ = {
 			isa = PBXGroup;
 			children = (
+				752B6A7E1CD636BF005B8539 /* ViewControllerForecast.swift */,
 				75A0B21A1CB9551100CC8E97 /* ViewController.swift */,
 				756D48751CC2900E008C9925 /*  openMapWeather.swift */,
+				752B6A861CD74322005B8539 /* bg1.jpg */,
+				752B6A821CD741B4005B8539 /* bg.png */,
 				75A0B21C1CB9551100CC8E97 /* Main.storyboard */,
 				75A0B21F1CB9551100CC8E97 /* Assets.xcassets */,
 				75A0B2211CB9551100CC8E97 /* LaunchScreen.storyboard */,
@@ -164,9 +173,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				752B6A871CD74322005B8539 /* bg1.jpg in Resources */,
 				75A0B2231CB9551100CC8E97 /* LaunchScreen.storyboard in Resources */,
 				75A0B2201CB9551100CC8E97 /* Assets.xcassets in Resources */,
 				755DA3F01CCBCF2D0099F89E /* Podfile in Resources */,
+				752B6A831CD741B4005B8539 /* bg.png in Resources */,
 				75A0B21E1CB9551100CC8E97 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -227,6 +238,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				756D48761CC2900E008C9925 /*  openMapWeather.swift in Sources */,
+				752B6A7F1CD636BF005B8539 /* ViewControllerForecast.swift in Sources */,
 				75A0B21B1CB9551100CC8E97 /* ViewController.swift in Sources */,
 				75A0B2191CB9551100CC8E97 /* AppDelegate.swift in Sources */,
 			);

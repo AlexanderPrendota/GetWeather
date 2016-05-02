@@ -16,22 +16,47 @@ import CoreLocation
 
 class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
     
+    @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var CityLabel: UILabel!
+    @IBOutlet weak var tempLabel: UILabel!
+    @IBOutlet weak var speedWideLabel: UILabel!
+    @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var humidityLabel: UILabel!
+    @IBOutlet weak var iconWeather: UIImageView!
+    
+    
+    
+    var timeText1: String!
+    var timeText2: String!
+    var timeText3: String!
+    var timeText4: String!
+    
+    var tempText1: String!
+    var tempText2: String!
+    var tempText3: String!
+    var tempText4: String!
+    
+    var iconImage1: UIImage!
+    var iconImage2: UIImage!
+    var iconImage3: UIImage!
+    var iconImage4: UIImage!
+    
     var openWeather = openMapWeather()
     var hud = MBProgressHUD()
     let locationManager : CLLocationManager = CLLocationManager()
 
-    
-    @IBOutlet weak var textLabel: UILabel!
-    @IBOutlet weak var textLabel2: UILabel!
-    
-    @IBAction func cityTappedButton(sender: UIBarButtonItem) {
-        displayCity()
-    }
-    @IBOutlet weak var weatherIcon: UIImageView!
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // backButton (forecastView)
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
+        
+        //Set Background
+        
+        let background = UIImage(named: "bg")
+        self.view.backgroundColor = UIColor(patternImage: background!)
+        
+        // Set setup
         self.openWeather.delegate = self
         locationManager.delegate = self
         
@@ -45,6 +70,12 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    @IBAction func cityButton(sender: UIBarButtonItem) {
+        
+        displayCity()
+        
+    }
 
     func displayCity() {
         
@@ -52,9 +83,9 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
         let ok = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) {
             (action) -> Void in
-            if let textFieled = (alert.textFields?.first)! as? UITextField {
+            if let textFieled = (alert.textFields?.first) {
                 self.activity()
-                self.openWeather.getWeatherForCity(textFieled.text!)
+                self.openWeather.getWeatherForecast(textFieled.text!)
             }
         }
         alert.addAction(ok)
@@ -63,6 +94,8 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
             textFiled.placeholder = "Enter city name"
         }
         self.presentViewController(alert, animated: true, completion: nil)
+        
+        hud.hide(true)
         
     }
     
@@ -76,60 +109,100 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     
     // MARK:  updateWeather
     
-    func updateWeatherInfo(weatherJson : JSON ) {
+    func updateWeatherInfoForecast(weatherJson : JSON ) {
         
         hud.hide(true)
         
         if let tempResalt = weatherJson["list"][0]["main"]["temp"].double {
+            
             //Get country
-            let country = weatherJson["city"]["coord"]["country"].stringValue
-            //Get Convert temperature
-            let temperature = openWeather.convertTemperature(country, temp: tempResalt)
+            let country = weatherJson["city"]["country"].stringValue
+            
             //Get city
             let cityName = weatherJson["city"]["name"].stringValue
-            //Get icon 
-            let weatherStringIcon = weatherJson["list"][0]["weather"][0]["icon"].stringValue
-            let weatherIcon = openWeather.getWeatherIcon(weatherStringIcon)
-        
-            //print data
+            self.CityLabel.text = "\(cityName),\(country)"
             print(cityName)
-            print(temperature)
-            self.weatherIcon.image = weatherIcon
-            self.textLabel.text = cityName
-            self.textLabel2.text = String(temperature)
             
-            
-        } else {
-            print("Please enter correct info")
-        }
-        
-    }
-    
-    func updateLocation(weatherJson : JSON ) {
-        
-        hud.hide(true)
-        
-        if let tempResalt = weatherJson["main"]["temp"].double {
-            //Get country
-            let country = weatherJson["sys"]["country"].stringValue
             //Get Convert temperature
             let temperature = openWeather.convertTemperature(country, temp: tempResalt)
-            //Get city
-            let cityName = weatherJson["name"].stringValue
-            let weatherStringIcon = weatherJson["weather"][0]["icon"].stringValue
-            let weatherIcon = openWeather.getWeatherIcon(weatherStringIcon)
-            
-            //print data
-            print(cityName)
+            self.tempLabel.text = "\(String(temperature))°"
             print(temperature)
-            self.weatherIcon.image = weatherIcon
-            self.textLabel.text = cityName
-            self.textLabel2.text = String(temperature)
             
+            // Get humidity
+            let humidity = weatherJson["list"][0]["main"]["humidity"].intValue
+            self.humidityLabel.text = String(humidity)
+            
+            //Get speed wind
+            let windSpeed = weatherJson["list"][0]["wind"]["speed"].intValue
+            self.speedWideLabel.text = String(windSpeed)
+
+            //Get description
+            let description = weatherJson["list"][0]["weather"][0]["description"].stringValue
+            self.descriptionLabel.text = description.uppercaseString
+            
+            //Get time
+
+            let now = Int(NSDate().timeIntervalSince1970)
+            //let time = weatherJson["dt"].intValue
+            let timeToString = openWeather.timeFromUnix(now)
+            self.timeLabel.text = "At \(timeToString) it is"
+            
+            //Get icon
+            let weatherStringIcon = weatherJson["list"][0]["weather"][0]["icon"].stringValue
+            let weatherIcon = openWeather.getWeatherIcon(weatherStringIcon)
+            self.iconWeather.image = weatherIcon
+            
+            
+            for i in 1...4 {
+                if let tempResalt = weatherJson["list"][i]["main"]["temp"].double {
+                    //Get temperature
+                    let temperature = openWeather.convertTemperature(country, temp: tempResalt)
+                
+                    if i == 1 {
+                        tempText1 = String(temperature)
+                    } else if i == 2 {
+                        tempText2 = String(temperature)
+                    } else if i == 3 {
+                        tempText3 = String(temperature)
+                    } else if i == 4 {
+                        tempText4 = String(temperature)
+                    }
+                    
+                    //Get time 
+                    let time = weatherJson["list"][i]["dt"].intValue
+                    let timeToString = openWeather.timeFromUnix(time)
+                    
+                    if i == 1 {
+                        timeText1 = String(timeToString)
+                    } else if i == 2 {
+                        timeText2 = String(timeToString)
+                    } else if i == 3 {
+                        timeText3 = String(timeToString)
+                    } else if i == 4 {
+                        timeText4 = String(timeToString)
+                    }
+                    
+                    // Get image
+                    let weatherStringIcon = weatherJson["list"][i]["weather"][0]["icon"].stringValue
+                    let weatherIcon = openWeather.getWeatherIcon(weatherStringIcon)
+                    
+                    if i == 1 {
+                        iconImage1 = weatherIcon
+                    } else if i == 2 {
+                        iconImage2 = weatherIcon
+                    } else if i == 3 {
+                        iconImage3 = weatherIcon
+                    } else if i == 4 {
+                        iconImage4 = weatherIcon
+                    }
+
+                }
+            }
             
         } else {
-            print("Please enter correct info")
+            print("Some problem with gitting correct info")
         }
+        
         
     }
     
@@ -157,6 +230,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
         print(error)
         print("Cant get your location")
+        self.displayCity()
         
     }
     
@@ -169,5 +243,27 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         
     }
     
+    // MARK : Segue
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "moreInfo" {
+            let forecastController = segue.destinationViewController as? ViewControllerForecast
+            
+            forecastController?.time1 = self.timeText1
+            forecastController?.time2 = self.timeText2
+            forecastController?.time3 = self.timeText3
+            forecastController?.time4 = self.timeText4
+            
+            forecastController?.temp1 = self.tempText1
+            forecastController?.temp2 = self.tempText2
+            forecastController?.temp3 = self.tempText3
+            forecastController?.temp4 = self.tempText4
+            
+            forecastController?.icon1 = self.iconImage1
+            forecastController?.icon2 = self.iconImage2
+            forecastController?.icon3 = self.iconImage3
+            forecastController?.icon4 = self.iconImage4
+            
+        }
+    }
+    
 }
-
